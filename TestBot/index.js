@@ -47,10 +47,11 @@ function doSomethingRandom(body){
         "retreat",
         "shoot"
     ];
-    var rnd = Math.floor(Math.random() * 5);
+    if (shouldShoot(body)){
+        return "shoot";
+    }
     action(body);
     mapValues(body);
-    return commands[rnd];
 }
 
 function gameLoop(body) {
@@ -84,10 +85,42 @@ enum Element = {
 }
 */
 
-function action(body) {
-    console.log(body);
+function shouldShoot(body) {
+    var shouldShoot = false;
+    body.enemies.forEach(function (enemy) {
+        if (enemy.x){ // i synsfelt
+            shouldShoot = isEnemyInFront(body.you, enemy);            
+        }
+    });
+    
+    return shouldShoot;
 }
 
+function action(body) {
+    console.log(body);
+    
+}
+
+function isEnemyInFront(you, enemy) {
+    if (you.direction === 'left'){
+        return enemy.x < you.x && enemy.y === you.y; 
+    }
+    
+    if (you.direction === 'right'){
+        return enemy.x > you.x && enemy.y === you.y; 
+    }
+
+    if (you.direction === 'top'){
+        return enemy.y < you.y && enemy.x === you.x; 
+    }
+
+    if (you.direction === 'bottom'){
+        return enemy.y > you.y && enemy.x === you.x; 
+    }
+
+    return false;
+
+}
 module.exports = {
     command: function(req) {
         return {
