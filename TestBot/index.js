@@ -24,6 +24,12 @@ function action (body){
             };
 }
 
+function commmand(req) {
+    return {
+           command: doSomethingRandom()
+	};
+}
+
 function getBody(req){
     switch(req.method){
         case 'GET':
