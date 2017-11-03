@@ -33,11 +33,10 @@ function getBody(req){
     }
 }
 
-module.exports = function (context, req) {
-
-    context.log('JavaScript HTTP trigger function processed a request.', req.body);
-    context.res = {
-        body: getBody(req)
-    };
-    context.done();
+module.exports = {
+    command: function(req) {
+        return {
+            command: doSomethingRandom()
+        };
+    }
 };
