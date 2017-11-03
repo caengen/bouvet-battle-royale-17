@@ -1,6 +1,7 @@
 # fluffy-penguins
-
-`node index.js`
+`> npm install`
+`> node index.js`
+Serveren kjører nå på localhost:3002
 
 Installer ngrok
 `./ngrok http 3002 --host-header="localhost:3002"`
