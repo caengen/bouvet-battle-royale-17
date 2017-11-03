@@ -11,7 +11,7 @@ Du får nå en url type http://603b4ba1.ngrok.io som kan brukes i battle
 For testing:
 https://gist.github.com/caengen/ce2667241d26b210d77a0ab7e616d0f7
 
-
+Debug config for VSC
 ```
 {
     // Use IntelliSense to learn about possible attributes.
