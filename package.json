@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/caengen/fluffy-penguins#readme",
   "dependencies": {
+    "a-star-search": "^0.1.13",
     "body-parser": "^1.18.2",
     "express": "^4.16.2"
   }
