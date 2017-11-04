@@ -43,10 +43,29 @@ var fire; // tiles med ild i guess
 
 function gameLoop(body) {
     mapValues(body);
+    you = body.you;
+    
+    // find enemy in range
+    var enemy = findEnemyInRange(body);
+    if (enemy) {
+        // am I healthy
+        if (amIStronger(you, enemy)) {
+            // is enemy in front => shooot
+            if (isEnemyInFront(you, enemy)) {
+                return 'shoot';
+            }
+            // turn/move to enemy 
+            if (isEnemyInOtherDirection(you, enemy) && !isEnemyFacingMe(you, enemy)) {
+                // return rotate left/right
+                return findRotationTowardEnemy(you, enemy);
+            }
+        }
+    }
+
     const nextTile = findPowerup(me, bonusTiles, walls);
     const rotateAction = getRotation(nextTile);
     if (!rotateAction) {
-        if (isWallInFront(me)){
+        if (isWallInFront(me)) {
             return 'shoot';
         }
         return 'advance';
@@ -63,7 +82,7 @@ const directions = {
 };
 
 function tests() {
-      
+
     console.log("test('left', 'bottom') answer:" + test('left', 'bottom'));
     console.log("test('bottom', 'left') answer:" + test('bottom', 'left'));
     console.log("test('left', 'top') answer:" + test('left', 'top'));
@@ -85,28 +104,123 @@ function tests() {
     }
 }
 
-function isWallInFront(me){
-    if (me.direction === 'left'){
-        return isWall(me.x -1, me.y);
+
+function findEnemyInRange(body) {
+    var result = null;
+    console.log(body);
+    if (!body.enemies){
+        return;
     }
 
-    if (me.direction === 'right'){
-        return isWall(me.x +1, me.y);
+    body.enemies.forEach(function (enemy) {
+        if (enemy.x && !result){ // i synsfelt
+            result = enemy;
+        }
+    });
+    
+    return result;
+}
+
+function amIStronger(you, enemy) {
+    // TODO Maybe? you.strength >= enemy.strength
+    return you.strength > enemy.strength;
+}
+
+function isEnemyInFront(you, enemy) {
+    if (you.direction === 'left'){
+        return enemy.x < you.x && enemy.y === you.y; 
+    }
+    
+    if (you.direction === 'right'){
+        return enemy.x > you.x && enemy.y === you.y; 
     }
 
-    if (me.direction === 'top'){
-        return isWall(me.x, me.y - 1);
+    if (you.direction === 'top'){
+        return enemy.y < you.y && enemy.x === you.x; 
     }
 
-    if (me.direction === 'bottom'){
-        return isWall(me.x, me.y + 1);        
+    if (you.direction === 'bottom'){
+        return enemy.y > you.y && enemy.x === you.x; 
+    }
+
+    return false;
+}
+
+function isEnemyFacingMe(you, enemy){
+    return isEnemyInFront(enemy, you);
+}
+
+function isEnemyInOtherDirection(you, enemy) {
+    if (you.direction === 'left' || you.direction === 'right') {
+        return enemy.x === you.x;
+    }
+    if (you.direction === 'top' || you.direction === 'bottom') {
+        return enemy.y === you.y;
+    }
+    // if enemy is behind =>
+        // turned towards you => run away
+    // if the enemy is to the left => turn left
+    // if enemy is to the rigt =>turn right
+}
+
+function findRotationTowardEnemy(you, enemy) {
+    if (you.direction === 'left') {
+        if (enemy.y < you.y) {
+            // turn right
+            return 'rotate-right';
+        } else {
+            return 'rotate-left';
+        }
+    }
+    if (you.direction === 'right') {
+        if (enemy.y < you.y) {
+            // turn right
+            return 'rotate-left';
+        } else {
+            return 'rotate-right';
+        }
+    }
+    if (you.direction === 'top') {
+        if (enemy.x < you.x) {
+            // turn right
+            return 'rotate-left';
+        } else {
+            return 'rotate-right';
+        }
+    }
+    if (you.direction === 'bottom') {
+        if (enemy.y < you.y) {
+            // turn right
+            return 'rotate-left';
+        } else {
+            return 'rotate-right';
+        }
     }
 }
 
-function isWall(x, y){
+
+function isWallInFront(me) {
+    if (me.direction === 'left') {
+        return isWall(me.x - 1, me.y);
+    }
+
+    if (me.direction === 'right') {
+        return isWall(me.x + 1, me.y);
+    }
+
+    if (me.direction === 'top') {
+        return isWall(me.x, me.y - 1);
+    }
+
+    if (me.direction === 'bottom') {
+        return isWall(me.x, me.y + 1);
+    }
+}
+
+function isWall(x, y) {
     var result = false;
-    walls.forEach(function(wall){
-        if (wall.x === x && wall.y === y){
+    walls.forEach(function (wall) {
+        if (wall.x === x && wall.y === y) {
             result = true;
         }
     });
@@ -115,18 +229,15 @@ function isWall(x, y){
 }
 
 //good enough
-function getRotation(destTile) {    
+function getRotation(destTile) {
     let direction;
-    if (me.x >  destTile.xAxis){
+    if (me.x > destTile.xAxis) {
         direction = 'left';
-    }
-    else if (me.x < destTile.xAxis){
+    } else if (me.x < destTile.xAxis) {
         direction = 'right';
-    }
-    else if (me.y > destTile.yAxis){
+    } else if (me.y > destTile.yAxis) {
         direction = 'top';
-    }
-    else if (me.y < destTile.yAxis){
+    } else if (me.y < destTile.yAxis) {
         direction = 'bottom';
     }
 
@@ -141,6 +252,17 @@ function getRotation(destTile) {
     } else {
         return 'rotate-left';
     }
+<<<<<<< HEAD
+=======
+
+    function nextTileIsWall() {
+        return _.some(walls, function (wall) {
+            if (wall.x == nextTile.xAxis && wall.y == nextTile.yAxis) {
+                return true;
+            }
+        });
+    }
+>>>>>>> 69e2e255b06c5351efd9a9734dfa12652195b48b
 }
 
 //good enough
@@ -165,7 +287,7 @@ function findPowerup(me, bonusTiles, walls) {
         }
     }
 
-    const wallMap = walls.map(function(wall) {
+    const wallMap = walls.map(function (wall) {
         return {
             xAxis: wall.x,
             yAxis: wall.y
@@ -179,10 +301,9 @@ function findPowerup(me, bonusTiles, walls) {
         }
     }
     const path = astar.run(start, dest, environment);
-    
+
     nextTile = path[1];
-    if (tileIsEqual(path[path.length-1], dest))
-    {
+    if (tileIsEqual(path[path.length - 1], dest)) {
         return path[1];
     }
 
@@ -190,9 +311,8 @@ function findPowerup(me, bonusTiles, walls) {
     return findPowerup(me, updatedTiles, walls);
 }
 
-function tileIsEqual(tileA, tileB){
-    if (tileA.xAxis === tileB.xAxis && tileA.yAxis === tileB.yAxis)
-    {
+function tileIsEqual(tileA, tileB) {
+    if (tileA.xAxis === tileB.xAxis && tileA.yAxis === tileB.yAxis) {
         return true;
     }
     return false;
@@ -227,7 +347,7 @@ function mapValues(body) {
     enemies = body.enemies;
     walls = body.walls;
     bonusTiles = _.remove(body.bonusTiles, tile => tile.type !== 'jquery');
-    suddenDeath = body.suddenDeath; 
+    suddenDeath = body.suddenDeath;
     fire = body.fire;
 }
 /*
@@ -249,7 +369,7 @@ function action(body) {
 }
 
 module.exports = {
-    command: function(body) {
+    command: function (body) {
         return {
             command: gameLoop(body)
         };
