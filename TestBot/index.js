@@ -358,7 +358,7 @@ function action(body) {
 }
 module.exports = function (context, req) {
         if(req.query.path === "/command"){
-            context.res = { body: gameLoop(req.body) };
+            context.res = { body: { command: gameLoop(req.body) }};
         }
         if(req.query.path === "/info"){
             context.res = { body: { name: 'the fluff', team: 'fluffy-penguins'}};
