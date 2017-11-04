@@ -62,10 +62,10 @@ function gameLoop(body) {
         }
     }
 
-    const nextTile = findPowerup(me, bonusTiles, walls);
+    const nextTile = findPowerup(you, bonusTiles, walls);
     const rotateAction = getRotation(nextTile);
     if (!rotateAction) {
-        if (isWallInFront(me)) {
+        if (isWallInFront(you)) {
             return 'shoot';
         }
         return 'advance';
@@ -241,9 +241,8 @@ function getRotation(destTile) {
         direction = 'bottom';
     }
 
-    if (direction == me.direction && !nextTileIsWall()) return;
+    if (direction == me.direction && !isWall(nextTile.xAxis, nextTile.yAxis)) return;
 
-    // left 0   bottom 3
     let hack = directions[me.direction] + 1;
     if (hack === 4) {
         hack = 0;
@@ -252,14 +251,6 @@ function getRotation(destTile) {
         return 'rotate-right';
     } else {
         return 'rotate-left';
-    }
-
-    function nextTileIsWall() {
-        return _.some(walls, function (wall) {
-            if (wall.x == nextTile.xAxis && wall.y == nextTile.yAxis) {
-                return true;
-            }
-        });
     }
 }
 
@@ -270,13 +261,21 @@ function findPowerup(me, bonusTiles, walls) {
         xAxis: me.x,
         yAxis: me.y
     };
-
+    let closestBonusTile;
     if (bonusTiles && bonusTiles.length > 0) {
-        const closestBonusTile = findClosestBonus(me, bonusTiles);
-        dest = {
-            xAxis: closestBonusTile.x,
-            yAxis: closestBonusTile.y
-        };
+        //Fix: closestBonusTile kan bli null
+        closestBonusTile = findClosestBonus(me, bonusTiles);
+        if (closestBonusTile) {
+            dest = {
+                xAxis: closestBonusTile.x,
+                yAxis: closestBonusTile.y
+            };
+        } else {
+            dest = {
+                xAxis: mapWidth,
+                yAxis: mapHeight
+            }    
+        }
     } else {
         dest = {
             xAxis: mapWidth,
@@ -300,12 +299,8 @@ function findPowerup(me, bonusTiles, walls) {
     const path = astar.run(start, dest, environment);
 
     nextTile = path[1];
-    if (tileIsEqual(path[path.length - 1], dest)) {
-        return path[1];
-    }
-
-    var updatedTiles = _.remove(body.bonusTiles, tile => !(tile.x === dest.xAxis && tile.y === dest.yAxis));
-    return findPowerup(me, updatedTiles, walls);
+    console.log(path);
+    return path[1];
 }
 
 function tileIsEqual(tileA, tileB) {
@@ -315,14 +310,15 @@ function tileIsEqual(tileA, tileB) {
     return false;
 }
 
-//shit 💩 fix pls 👇🏽
+//Fix: 💩-func fix pls 👇🏽
 function findClosestBonus(me, bonusTiles) {
-    let prevNum = Math.abs(me.x - bonusTiles[0].x) + Math.abs(me.y - bonusTiles[0].y);
+    //let prevNum = Math.abs(me.x - bonusTiles[0].x) + Math.abs(me.y - bonusTiles[0].y);
+    let prevNum = Math.sqrt(me.x*bonusTiles[0].x + me.y*bonusTiles[0].y);
     let indexClosest;
     let currNum;
 
     for (i = 0; i < bonusTiles.length; i++) {
-        currNum = Math.abs(me.x - bonusTiles[i].x) + Math.abs(me.y - bonusTiles[i].y);
+        currNum = Math.sqrt(me.x*bonusTiles[i].x + me.y*bonusTiles[i].y);
         if (currNum < prevNum) {
             indexClosest = i;
         }
@@ -355,11 +351,7 @@ function calculateSurvivalScore();
 function dogfight();
 function escape();
 */
-/*
-enum Element = {
-    PowerUp
-}
-*/
+
 
 function action(body) {
     //console.log(body);
