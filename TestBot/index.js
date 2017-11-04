@@ -130,9 +130,8 @@ function getRotation(destTile) {
         direction = 'bottom';
     }
 
-    if (direction == me.direction && !nextTileIsWall()) return;
+    if (direction == me.direction && !isWall(nextTile.xAxis, nextTile.yAxis)) return;
 
-    // left 0   bottom 3
     let hack = directions[me.direction] + 1;
     if (hack === 4) {
         hack = 0;
@@ -141,14 +140,6 @@ function getRotation(destTile) {
         return 'rotate-right';
     } else {
         return 'rotate-left';
-    }
-
-    function nextTileIsWall() {
-        return _.some(walls, function(wall) {
-            if (wall.x == nextTile.xAxis && wall.y == nextTile.yAxis) {
-                return true;
-            }
-        });
     }
 }
 
@@ -161,6 +152,7 @@ function findPowerup(me, bonusTiles, walls) {
     };
 
     if (bonusTiles && bonusTiles.length > 0) {
+        //Fix: closestBonusTile kan bli null
         const closestBonusTile = findClosestBonus(me, bonusTiles);
         dest = {
             xAxis: closestBonusTile.x,
@@ -206,7 +198,7 @@ function tileIsEqual(tileA, tileB){
     return false;
 }
 
-//shit 💩 fix pls 👇🏽
+//Fix: 💩-func fix pls 👇🏽
 function findClosestBonus(me, bonusTiles) {
     let prevNum = Math.abs(me.x - bonusTiles[0].x) + Math.abs(me.y - bonusTiles[0].y);
     let indexClosest;
