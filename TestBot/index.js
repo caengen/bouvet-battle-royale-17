@@ -189,7 +189,21 @@ function findPowerup(me, bonusTiles, walls) {
     const path = astar.run(start, dest, environment);
     
     nextTile = path[1];
-    return path[1];
+    if (tileIsEqual(path[path.length-1], dest))
+    {
+        return path[1];
+    }
+
+    var updatedTiles = _.remove(body.bonusTiles, tile => !(tile.x === dest.xAxis && tile.y === dest.yAxis));
+    return findPowerup(me, updatedTiles, walls);
+}
+
+function tileIsEqual(tileA, tileB){
+    if (tileA.xAxis === tileB.xAxis && tileA.yAxis === tileB.yAxis)
+    {
+        return true;
+    }
+    return false;
 }
 
 //shit 💩 fix pls 👇🏽
@@ -197,6 +211,7 @@ function findClosestBonus(me, bonusTiles) {
     let prevNum = Math.abs(me.x - bonusTiles[0].x) + Math.abs(me.y - bonusTiles[0].y);
     let indexClosest;
     let currNum;
+
     for (i = 0; i < bonusTiles.length; i++) {
         currNum = Math.abs(me.x - bonusTiles[i].x) + Math.abs(me.y - bonusTiles[i].y);
         if (currNum < prevNum) {
