@@ -1,4 +1,11 @@
 const astar = require('a-star-search');
+// var commands = [
+    //     "rotate-right",
+    //     "rotate-left",
+    //     "advance",
+    //     "retreat",
+    //     "shoot"
+    // ];
 
 var mapWidth;
 var mapHeight;
@@ -7,7 +14,7 @@ var penguinDamage;
 var weaponDamage;
 var visibility;
 var weaponRange;
-var me;
+var you;
 /*
  { direction: 'top',
    x: 1,
@@ -39,19 +46,30 @@ type BonusTile {
 var suddenDeath; // antall turer igjen
 var fire; // tiles med ild i guess
 
-function doSomethingRandom(body){
-    var commands = [
-        "rotate-right",
-        "rotate-left",
-        "advance",
-        "retreat",
-        "shoot"
-    ];
-    if (shouldShoot(body)){
-        return "shoot";
+function doSomething(body){
+    you = body.you;
+
+    // find enemy in range
+    var enemy = findEnemyInRange(body);
+    if (enemy) {
+        // am I healthy
+        if (amIStronger(you, enemy)) {
+            // is enemy in front => shooot
+            if (isEnemyInFront(you, enemy)) {
+                return 'shoot';
+            }
+            // turn/move to enemy 
+            if (isEnemyInOtherDirection(you, enemy) && !isEnemyFacingMe(you, enemy)) {
+                // return rotate left/right
+                return findRotationTowardEnemy(you, enemy);
+            }
+        }
     }
+        
     action(body);
     mapValues(body);
+    // TODO remove when path finding is in place.
+    return "advance"
 }
 
 function gameLoop(body) {
@@ -85,15 +103,21 @@ enum Element = {
 }
 */
 
-function shouldShoot(body) {
-    var shouldShoot = false;
+// TODO Find first enemy, return enemy
+function findEnemyInRange(body) {
+    var result = null;
     body.enemies.forEach(function (enemy) {
-        if (enemy.x){ // i synsfelt
-            shouldShoot = isEnemyInFront(body.you, enemy);            
+        if (enemy.x && !result){ // i synsfelt
+            result = enemy;
         }
     });
     
-    return shouldShoot;
+    return result;
+}
+
+function amIStronger(you, enemy) {
+    // TODO Maybe? you.strength >= enemy.strength
+    return you.strength > enemy.strength;
 }
 
 function action(body) {
@@ -119,12 +143,64 @@ function isEnemyInFront(you, enemy) {
     }
 
     return false;
-
 }
+
+function isEnemyFacingMe(you, enemy){
+    return isEnemyInFront(enemy, you);
+}
+
+function isEnemyInOtherDirection(you, enemy) {
+    if (you.direction === 'left' || you.direction === 'right') {
+        return enemy.x === you.x;
+    }
+    if (you.direction === 'top' || you.direction === 'bottom') {
+        return enemy.y === you.y;
+    }
+    // if enemy is behind =>
+        // turned towards you => run away
+    // if the enemy is to the left => turn left
+    // if enemy is to the rigt =>turn right
+}
+
+function findRotationTowardEnemy(you, enemy) {
+    if (you.direction === 'left') {
+        if (enemy.y < you.y) {
+            // turn right
+            return 'rotate-right';
+        } else {
+            return 'rotate-left';
+        }
+    }
+    if (you.direction === 'right') {
+        if (enemy.y < you.y) {
+            // turn right
+            return 'rotate-left';
+        } else {
+            return 'rotate-right';
+        }
+    }
+    if (you.direction === 'top') {
+        if (enemy.x < you.x) {
+            // turn right
+            return 'rotate-left';
+        } else {
+            return 'rotate-right';
+        }
+    }
+    if (you.direction === 'bottom') {
+        if (enemy.y < you.y) {
+            // turn right
+            return 'rotate-left';
+        } else {
+            return 'rotate-right';
+        }
+    }
+}
+
 module.exports = {
     command: function(req) {
         return {
-            command: doSomethingRandom(req)
+            command: doSomething(req)
         };
     }
 };
