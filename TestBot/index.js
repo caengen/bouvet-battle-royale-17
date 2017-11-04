@@ -123,7 +123,7 @@ function findEnemyInRange(body) {
 
 function amIStronger(you, enemy) {
     // TODO Maybe? you.strength >= enemy.strength
-    return you.strength > enemy.strength;
+    return you.strength >= enemy.strength;
 }
 
 function isEnemyInFront(you, enemy) {
