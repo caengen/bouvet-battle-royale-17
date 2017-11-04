@@ -107,7 +107,7 @@ enum Element = {
 // TODO Find first enemy, return enemy
 function findEnemyInRange(body) {
     var result = null;
-    console.log.error(body);
+    console.log(body);
     if (!body.enemies){
         return;
     }
