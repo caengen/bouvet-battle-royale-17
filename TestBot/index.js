@@ -9,6 +9,7 @@ var weaponDamage;
 var visibility;
 var weaponRange;
 var me;
+var nextTile;
 /*
  { direction: 'top',
    x: 1,
@@ -44,7 +45,6 @@ function gameLoop(body) {
     mapValues(body);
     const nextTile = findPowerup(me, bonusTiles, walls);
     const rotateAction = getRotation(nextTile);
-    tests();
     if (!rotateAction) {
         return 'advance';
     } else {
@@ -98,7 +98,7 @@ function getRotation(destTile) {
         direction = 'bottom';
     }
 
-    if (direction == me.direction) return null;
+    if (direction == me.direction && !nextTileIsWall()) return;
 
     // left 0   bottom 3
     let hack = directions[me.direction] + 1;
@@ -110,19 +110,37 @@ function getRotation(destTile) {
     } else {
         return 'rotate-left';
     }
+
+    function nextTileIsWall() {
+        return _.some(walls, function(wall) {
+            if (wall.x == nextTile.xAxis && wall.y == nextTile.yAxis) {
+                return true;
+            }
+        });
+    }
 }
 
 //good enough
 function findPowerup(me, bonusTiles, walls) {
+    let dest;
     const start = {
         xAxis: me.x,
         yAxis: me.y
     };
-    const closestBonusTile = findClosestBonus(me, bonusTiles);
-    const dest = {
-        xAxis: closestBonusTile.x,
-        yAxis: closestBonusTile.y
+
+    if (bonusTiles && bonusTiles.length > 0) {
+        const closestBonusTile = findClosestBonus(me, bonusTiles);
+        dest = {
+            xAxis: closestBonusTile.x,
+            yAxis: closestBonusTile.y
+        };
+    } else {
+        dest = {
+            xAxis: mapWidth,
+            yAxis: mapHeight
+        }
     }
+
     const wallMap = walls.map(function(wall) {
         return {
             xAxis: wall.x,
@@ -138,10 +156,11 @@ function findPowerup(me, bonusTiles, walls) {
     }
     const path = astar.run(start, dest, environment);
     
+    nextTile = path[1];
     return path[1];
 }
 
-//good enough
+//shit 💩 fix pls 👇🏽
 function findClosestBonus(me, bonusTiles) {
     let prevNum = Math.abs(me.x - bonusTiles[0].x) + Math.abs(me.y - bonusTiles[0].y);
     let indexClosest;
