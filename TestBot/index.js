@@ -62,10 +62,10 @@ function gameLoop(body) {
         }
     }
 
-    const nextTile = findPowerup(me, bonusTiles, walls);
+    const nextTile = findPowerup(you, bonusTiles, walls);
     const rotateAction = getRotation(nextTile);
     if (!rotateAction) {
-        if (isWallInFront(me)) {
+        if (isWallInFront(you)) {
             return 'shoot';
         }
         return 'advance';
