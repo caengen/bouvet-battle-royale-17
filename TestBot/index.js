@@ -287,8 +287,8 @@ function findPowerup(me, bonusTiles, walls) {
         });
     } else {
         const dest = {
-            xAxis: mapWidth,
-            yAxis: mapHeight
+            xAxis: mapWidth / 2,
+            yAxis: mapHeight / 2
         };
         paths = [ astar.run(start, dest, environment)]
     }
