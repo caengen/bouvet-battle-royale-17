@@ -368,7 +368,13 @@ function action(body) {
 module.exports = {
     command: function (body) {
         return {
-            command: gameLoop(body)
+            command: gameLoop(body),
+            info: function (){
+                return {
+                    "name":"trolo",
+                    "team": "fluffy-penguins"
+                  }
+            }
         };
     }
 };
