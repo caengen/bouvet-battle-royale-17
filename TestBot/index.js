@@ -261,27 +261,6 @@ function findPowerup(me, bonusTiles, walls) {
         xAxis: me.x,
         yAxis: me.y
     };
-    let closestBonusTile;
-    if (bonusTiles && bonusTiles.length > 0) {
-        //Fix: closestBonusTile kan bli null
-        closestBonusTile = findClosestBonus(me, bonusTiles);
-        if (closestBonusTile) {
-            dest = {
-                xAxis: closestBonusTile.x,
-                yAxis: closestBonusTile.y
-            };
-        } else {
-            dest = {
-                xAxis: mapWidth,
-                yAxis: mapHeight
-            }    
-        }
-    } else {
-        dest = {
-            xAxis: mapWidth,
-            yAxis: mapHeight
-        }
-    }
 
     const wallMap = walls.map(function (wall) {
         return {
@@ -296,11 +275,26 @@ function findPowerup(me, bonusTiles, walls) {
             yAxis: mapHeight
         }
     }
-    const path = astar.run(start, dest, environment);
-
-    nextTile = path[1];
-    console.log(path);
-    return path[1];
+    //const path = astar.run(start, dest, environment);
+    let paths;
+    if (bonusTiles && bonusTiles.length) {
+        paths = bonusTiles.map(function(tile) {
+            const dest = {
+                xAxis: tile.x,
+                yAxis: tile.y
+            };
+            return astar.run(start, dest, environment)
+        });
+    } else {
+        const dest = {
+            xAxis: mapWidth,
+            yAxis: mapHeight
+        };
+        paths = [ astar.run(start, dest, environment)]
+    }
+    let shortest = _.min(paths, function(i){ return i.length; })    
+    nextTile = shortest[1];
+    return shortest[1];
 }
 
 function tileIsEqual(tileA, tileB) {
