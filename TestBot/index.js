@@ -357,14 +357,13 @@ function action(body) {
     //console.log(body);
 }
 module.exports = function (context, req) {
-    
-        if(req.query.path==="/command"){
+        if(req.query.path === "/command"){
             context.res = { body: gameLoop(req.body) };
         }
-        if(req.query.path==="/info"){
+        if(req.query.path === "/info"){
             context.res = { body: { name: 'the fluff', team: 'fluffy-penguins'}};
         }
-        context.log('JavaScript HTTP trigger function processed a request.', req.body);
+        // context.log('JavaScript HTTP trigger function processed a request.', req.body);
         // context.res = {
         //     body: getBody(req)
         // };
