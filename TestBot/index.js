@@ -46,7 +46,8 @@ type BonusTile {
 var suddenDeath; // antall turer igjen
 var fire; // tiles med ild i guess
 
-function doSomething(body){
+function doSomething(req){
+    var body = req.body
     you = body.you;
 
     // find enemy in range
