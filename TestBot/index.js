@@ -46,6 +46,9 @@ function gameLoop(body) {
     const rotateAction = getRotation(nextTile);
     tests();
     if (!rotateAction) {
+        if (isWallInFront(me)){
+            return 'shoot';
+        }
         return 'advance';
     } else {
         return rotateAction;
@@ -80,6 +83,35 @@ function tests() {
             return 'rotate-left';
         }
     }
+}
+
+function isWallInFront(me){
+    if (me.direction === 'left'){
+        return isWall(me.x -1, me.y);
+    }
+
+    if (me.direction === 'right'){
+        return isWall(me.x +1, me.y);
+    }
+
+    if (me.direction === 'top'){
+        return isWall(me.x, me.y - 1);
+    }
+
+    if (me.direction === 'bottom'){
+        return isWall(me.x, me.y + 1);        
+    }
+}
+
+function isWall(x, y){
+    var result = false;
+    walls.forEach(function(wall){
+        if (wall.x === x && wall.y === y){
+            result = true;
+        }
+    });
+
+    return result;
 }
 
 //good enough
