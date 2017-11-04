@@ -364,17 +364,18 @@ enum Element = {
 function action(body) {
     //console.log(body);
 }
-
-module.exports = {
-    command: function (body) {
-        return {
-            command: gameLoop(body),
-            info: function (){
-                return {
-                    "name":"trolo",
-                    "team": "fluffy-penguins"
-                  }
-            }
-        };
-    }
-};
+module.exports = function (context, req) {
+    
+        if(req.query.path==="/command"){
+            context.res = { body: gameLoop(req.body) };
+        }
+        if(req.query.path==="/info"){
+            context.res = { body: { name: 'the fluff', team: 'fluffy-penguins'}};
+        }
+        context.log('JavaScript HTTP trigger function processed a request.', req.body);
+        // context.res = {
+        //     body: getBody(req)
+        // };
+        context.done();
+    };
+    
