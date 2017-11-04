@@ -252,17 +252,6 @@ function getRotation(destTile) {
     } else {
         return 'rotate-left';
     }
-<<<<<<< HEAD
-=======
-
-    function nextTileIsWall() {
-        return _.some(walls, function (wall) {
-            if (wall.x == nextTile.xAxis && wall.y == nextTile.yAxis) {
-                return true;
-            }
-        });
-    }
->>>>>>> 69e2e255b06c5351efd9a9734dfa12652195b48b
 }
 
 //good enough
@@ -272,14 +261,21 @@ function findPowerup(me, bonusTiles, walls) {
         xAxis: me.x,
         yAxis: me.y
     };
-
+    let closestBonusTile;
     if (bonusTiles && bonusTiles.length > 0) {
         //Fix: closestBonusTile kan bli null
-        const closestBonusTile = findClosestBonus(me, bonusTiles);
-        dest = {
-            xAxis: closestBonusTile.x,
-            yAxis: closestBonusTile.y
-        };
+        closestBonusTile = findClosestBonus(me, bonusTiles);
+        if (closestBonusTile) {
+            dest = {
+                xAxis: closestBonusTile.x,
+                yAxis: closestBonusTile.y
+            };
+        } else {
+            dest = {
+                xAxis: mapWidth,
+                yAxis: mapHeight
+            }    
+        }
     } else {
         dest = {
             xAxis: mapWidth,
@@ -303,12 +299,8 @@ function findPowerup(me, bonusTiles, walls) {
     const path = astar.run(start, dest, environment);
 
     nextTile = path[1];
-    if (tileIsEqual(path[path.length - 1], dest)) {
-        return path[1];
-    }
-
-    var updatedTiles = _.remove(body.bonusTiles, tile => !(tile.x === dest.xAxis && tile.y === dest.yAxis));
-    return findPowerup(me, updatedTiles, walls);
+    console.log(path);
+    return path[1];
 }
 
 function tileIsEqual(tileA, tileB) {
@@ -320,12 +312,13 @@ function tileIsEqual(tileA, tileB) {
 
 //Fix: 💩-func fix pls 👇🏽
 function findClosestBonus(me, bonusTiles) {
-    let prevNum = Math.abs(me.x - bonusTiles[0].x) + Math.abs(me.y - bonusTiles[0].y);
+    //let prevNum = Math.abs(me.x - bonusTiles[0].x) + Math.abs(me.y - bonusTiles[0].y);
+    let prevNum = Math.sqrt(me.x*bonusTiles[0].x + me.y*bonusTiles[0].y);
     let indexClosest;
     let currNum;
 
     for (i = 0; i < bonusTiles.length; i++) {
-        currNum = Math.abs(me.x - bonusTiles[i].x) + Math.abs(me.y - bonusTiles[i].y);
+        currNum = Math.sqrt(me.x*bonusTiles[i].x + me.y*bonusTiles[i].y);
         if (currNum < prevNum) {
             indexClosest = i;
         }
@@ -358,11 +351,7 @@ function calculateSurvivalScore();
 function dogfight();
 function escape();
 */
-/*
-enum Element = {
-    PowerUp
-}
-*/
+
 
 function action(body) {
     //console.log(body);
