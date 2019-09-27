@@ -1,4 +1,4 @@
-# fluffy-penguins
+# Bouvet Battle Royale 2017 entry
 `> npm install`
 `> node index.js`
 Serveren kjører nå på localhost:3002
